@@ -5,20 +5,26 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.audioRepo.ServiceStartup;
 import com.audioRepo.controller.AudioController;
 import com.audioRepo.entity.ResponseObject;
 
@@ -26,6 +32,9 @@ import com.audioRepo.entity.ResponseObject;
 public class AudioServiceImpl implements IAudioService {
 	final static Logger logger = LoggerFactory.getLogger(AudioServiceImpl.class);
 
+	@Value("#{'${file.extension}'.split(',')}")
+	public List<String> allowedExtension;
+	
 	//Base location path
 	final static String LocationPath = System.getProperty("catalina.home");
 	File dir = new File(LocationPath+ File.separator+"uploads");
@@ -45,7 +54,9 @@ public class AudioServiceImpl implements IAudioService {
 		if (!file.isEmpty()) {
 			try {
 				logger.info("File Content Type:"+file.getContentType());
-				if(file.getContentType().contains("audio"))
+				String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+				logger.info("Allowed Extensions : "+allowedExtension.size()+" Extension: "+ext);
+				if(allowedExtension.contains(ext))
 				{
 					InputStream isRef = file.getInputStream();            	
 					byte[] bytes = file.getBytes();
@@ -79,7 +90,7 @@ public class AudioServiceImpl implements IAudioService {
 					responseObj.setStatus(Boolean.FALSE);
 				}
 			} catch (Exception e) {
-				logger.info(e.getMessage());
+				e.printStackTrace();
 				responseObj.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				responseObj.setStatus(Boolean.FALSE);
 				responseObj.setMessage("FAILURE");
