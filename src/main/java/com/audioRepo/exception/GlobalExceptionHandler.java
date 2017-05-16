@@ -20,6 +20,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	final static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+	ResponseObject errorInfo;
+	
+	@ExceptionHandler(FileNotFoundException.class)
+	@ResponseBody
+	public ResponseEntity<Object> FileNotFoundExceptionHandler(FileNotFoundException ex) {
+	    ResponseObject errorInfo = new ResponseObject();
+	    errorInfo.setMessage(ex.getMessage());
+	    errorInfo.setStatus(Boolean.FALSE);
+	    errorInfo.setCode(HttpStatus.NOT_FOUND.value());
+	    return new ResponseEntity<Object>(errorInfo, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(InvalidFileException.class)
+	@ResponseBody
+	public ResponseEntity<Object> InvalidFileExceptionHandler(InvalidFileException ex) {
+	    ResponseObject errorInfo = new ResponseObject();
+	    errorInfo.setMessage(ex.getMessage());
+	    errorInfo.setStatus(Boolean.FALSE);
+	    errorInfo.setCode(HttpStatus.BAD_REQUEST.value());
+	    return new ResponseEntity<Object>(errorInfo, HttpStatus.BAD_REQUEST);
+	}
+	
+
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
 	public ResponseEntity<Object> exceptionHandler(HttpServletRequest req, Exception ex) {

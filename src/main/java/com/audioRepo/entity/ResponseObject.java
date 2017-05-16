@@ -8,6 +8,25 @@ public class ResponseObject {
 	
 	private String message;
 
+	/**
+	 * @param status
+	 * @param code
+	 * @param message
+	 */
+	public ResponseObject(Boolean status, int code, String message) {
+		super();
+		this.status = status;
+		this.code = code;
+		this.message = message;
+	}
+
+	/**
+	 * 
+	 */
+	public ResponseObject() {
+		super();
+	}
+
 	public Boolean getStatus() {
 		return status;
 	}
