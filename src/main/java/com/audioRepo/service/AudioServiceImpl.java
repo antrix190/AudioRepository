@@ -42,6 +42,9 @@ public class AudioServiceImpl implements IAudioService {
 	public ResponseObject responseObj = null;
 	public File dir = null;
 	public String key;
+	public File serverFile;
+	public FileOutputStream fop;
+	public String filename;
 
 	@PostConstruct
 	private void initPath(){
@@ -63,12 +66,12 @@ public class AudioServiceImpl implements IAudioService {
 
 		if (FileValidator.isValid(file)) {      	
 			byte[] bytes = file.getBytes();
-			String name = file.getOriginalFilename();
+			filename = file.getOriginalFilename();
 
-			File serverFile = new File(dir.getAbsolutePath() + File.separator+ key);
-			FileOutputStream fop = new FileOutputStream(serverFile);
+			serverFile = new File(dir.getAbsolutePath() + File.separator+ key);
+			fop = new FileOutputStream(serverFile);
 			fop.write(bytes);
-			directoryMap.put(key, name);
+			directoryMap.put(key, filename);
 			responseObj = new ResponseObject(Boolean.TRUE, HttpStatus.ACCEPTED.value(), "ID:"+key);
 
 			fop.flush();
@@ -81,31 +84,27 @@ public class AudioServiceImpl implements IAudioService {
 	public ResponseObject downloadAudio(HttpServletResponse response, String id) throws IOException, FileNotFoundException {
 		// TODO Auto-generated method stub
 
-		String filename =  directoryMap.get(id);	
+		filename =  directoryMap.get(id);	
 		logger.info("Request id {}, filename {}",id,filename);
 
 		if(filename != null)
 		{
-			File file = new File(dir+File.separator+id);
-			InputStream in = new FileInputStream(file);
-			logger.info("File path for download: "+file.getPath());
+			serverFile = new File(dir+File.separator+id);
+			InputStream in = new FileInputStream(serverFile);
+			logger.info("File path for download: "+serverFile.getPath());
 
 			response.setContentType("audio/mpeg");
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-			response.setHeader("Content-Length", String.valueOf(file.length()));
+			response.setHeader("Content-Length", String.valueOf(serverFile.length()));
 			FileCopyUtils.copy(in, response.getOutputStream());
 		}
-		else
-		{
-			throw new FileNotFoundException("File not found.");
-		}
+		else throw new FileNotFoundException("File not found.");
 		return responseObj;
 	}
 
 	@Override
 	public Map<String,String> getDirectory() throws IOException {
 		// TODO Auto-generated method stub
-		//Changes needed here.
 		return directoryMap;
 	}
 }

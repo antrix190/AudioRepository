@@ -1,4 +1,4 @@
-package com.audioRepo.controller;
+package com.audioRepo.web;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,13 +32,6 @@ public class AudioController {
 	
 	@Autowired
 	IAudioService audioService;
-	
-	@RequestMapping(value="/hello",method = RequestMethod.GET)
-	@ResponseBody
-	public String Hello()
-	{
-		return "Welcome to Sonetel Audio Repository";
-	}
 	
 	@RequestMapping(value = "/uploadAudioFile", method = RequestMethod.POST)
 	public @ResponseBody ResponseObject uploadAudio(@RequestParam("file") MultipartFile file) throws IOException, InvalidFileException {
