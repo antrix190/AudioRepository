@@ -54,6 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private ResponseEntity<Object> getResponseEntity(Boolean status, int code, String message,
 			HttpStatus httpStatus) {
 		// TODO Auto-generated method stub
-		return new ResponseEntity<Object>(new ResponseObject(status,code,message),httpStatus);
+		errorInfo = new ResponseObject(status,code,message);
+		return new ResponseEntity<Object>(errorInfo,httpStatus);
 	}
 	 }
