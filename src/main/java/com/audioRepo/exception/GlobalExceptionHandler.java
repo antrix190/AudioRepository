@@ -25,31 +25,35 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(FileNotFoundException.class)
 	@ResponseBody
 	public ResponseEntity<Object> FileNotFoundExceptionHandler(FileNotFoundException ex) {
-	    ResponseObject errorInfo = new ResponseObject();
-	    errorInfo.setMessage(ex.getMessage());
-	    errorInfo.setStatus(Boolean.FALSE);
-	    errorInfo.setCode(HttpStatus.NOT_FOUND.value());
-	    return new ResponseEntity<Object>(errorInfo, HttpStatus.NOT_FOUND);
+		logger.info("Caught FileNotFoundException");
+	    return getResponseEntity(Boolean.FALSE,HttpStatus.NOT_FOUND.value(),ex.getMessage(),HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(InvalidFileException.class)
 	@ResponseBody
 	public ResponseEntity<Object> InvalidFileExceptionHandler(InvalidFileException ex) {
-	    ResponseObject errorInfo = new ResponseObject();
-	    errorInfo.setMessage(ex.getMessage());
-	    errorInfo.setStatus(Boolean.FALSE);
-	    errorInfo.setCode(HttpStatus.BAD_REQUEST.value());
-	    return new ResponseEntity<Object>(errorInfo, HttpStatus.BAD_REQUEST);
+		logger.error("Caught InvalidFileException");
+	    return getResponseEntity(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),ex.getMessage(),HttpStatus.BAD_REQUEST);
 	}
 	
 
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
 	public ResponseEntity<Object> exceptionHandler(HttpServletRequest req, Exception ex) {
-	    ResponseObject errorInfo = new ResponseObject();
-	    errorInfo.setMessage(ex.getMessage());
-	    errorInfo.setStatus(Boolean.FALSE);
-	    errorInfo.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-	    return new ResponseEntity<Object>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);
+		logger.error("Caught Exception type {}, message {}",ex.getClass().getSimpleName(),ex.getMessage());
+	    return getResponseEntity(Boolean.FALSE,HttpStatus.INTERNAL_SERVER_ERROR.value(),ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	/**
+	 * @param status
+	 * @param code
+	 * @param message
+	 * @param httpStatus
+	 * @return
+	 */
+	private ResponseEntity<Object> getResponseEntity(Boolean status, int code, String message,
+			HttpStatus httpStatus) {
+		// TODO Auto-generated method stub
+		return new ResponseEntity<Object>(new ResponseObject(status,code,message),httpStatus);
 	}
 	 }

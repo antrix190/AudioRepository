@@ -19,6 +19,7 @@ import com.audioRepo.exception.InvalidFileException;
  */
 @Component
 public class FileValidator {
+	
 	public static List<String> allowedExtension;
 
 	@Value("#{'${file.extension}'.split(',')}")
@@ -27,7 +28,7 @@ public class FileValidator {
 	}
 
 	public static boolean isValid(MultipartFile file) throws InvalidFileException{
-		if (!file.isEmpty()) {
+		if (!file.isEmpty()){
 			String ext = FilenameUtils.getExtension(file.getOriginalFilename());
 			if(allowedExtension.contains(ext))
 				return true;

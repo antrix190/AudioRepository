@@ -28,7 +28,7 @@ import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisher;
  *
  * Apr 6, 2017
  */
-@Configuration
+//@Configuration
 public class MetricsConfig {
 
 
@@ -52,9 +52,9 @@ public class MetricsConfig {
 		metricRegistry.register("threads", new ThreadStatesGaugeSet());
 		final GraphiteReporter reporter = GraphiteReporter
 				.forRegistry(metricRegistry)
-				.prefixedWith("AudioRepository")
+				.prefixedWith("file-uploader")
 				.build(graphite());
-		reporter.start(1, TimeUnit.SECONDS);
+		reporter.start(30, TimeUnit.SECONDS);
 		return reporter;
 	}
 

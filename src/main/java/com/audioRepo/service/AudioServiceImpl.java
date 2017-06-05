@@ -52,7 +52,7 @@ public class AudioServiceImpl implements IAudioService {
 			path = System.getProperty("catalina.base")+"/"+folder;
 
 		dir = new File(path+ File.separator+"uploads");
-		
+
 		//Create uploads directory if it doesn't exist.
 		if(!dir.exists())
 			dir.mkdirs();
@@ -67,8 +67,8 @@ public class AudioServiceImpl implements IAudioService {
 		if (FileValidator.isValid(file)) {      	
 			byte[] bytes = file.getBytes();
 			filename = file.getOriginalFilename();
-
 			serverFile = new File(dir.getAbsolutePath() + File.separator+ key);
+			
 			fop = new FileOutputStream(serverFile);
 			fop.write(bytes);
 			directoryMap.put(key, filename);
@@ -105,6 +105,7 @@ public class AudioServiceImpl implements IAudioService {
 	@Override
 	public Map<String,String> getDirectory() throws IOException {
 		// TODO Auto-generated method stub
+		//Change for Directory
 		return directoryMap;
 	}
 }
