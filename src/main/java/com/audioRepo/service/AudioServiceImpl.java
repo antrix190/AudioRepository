@@ -29,8 +29,8 @@ import com.audioRepo.exception.InvalidFileException;
 public class AudioServiceImpl implements IAudioService {
 	final static Logger logger = LoggerFactory.getLogger(AudioServiceImpl.class);
 
-	//Static fallback path.
-	final private String folder = "AudioRepo";
+	@Value("${file.path.fallback}")
+	private String folder;
 
 	@Value("${file.path}")
 	public String path;
@@ -39,18 +39,17 @@ public class AudioServiceImpl implements IAudioService {
 	//Change the implementation.
 	public static Map<String,String> directoryMap = new HashMap<String,String>();
 
-	public ResponseObject responseObj = null;
-	public File dir = null;
+	public File dir;
 	public String key;
 	public File serverFile;
-	public FileOutputStream fop;
 	public String filename;
 
 	@PostConstruct
 	private void initPath(){
 		if(path==null || path.length()==0)
-			path = System.getProperty("catalina.base")+"/"+folder;
+			path = System.getProperty("catalina.base")+"\\"+folder;
 
+		logger.info("path "+path);
 		dir = new File(path+ File.separator+"uploads");
 
 		//Create uploads directory if it doesn't exist.
@@ -64,24 +63,23 @@ public class AudioServiceImpl implements IAudioService {
 		//Unique Id for each upload
 		key = UUID.randomUUID().toString();
 
-		if (FileValidator.isValid(file)) {      	
-			byte[] bytes = file.getBytes();
-			filename = file.getOriginalFilename();
+		if (FileValidator.isValid(file)) { 
 			serverFile = new File(dir.getAbsolutePath() + File.separator+ key);
+			FileOutputStream fop = new FileOutputStream(serverFile);
+			fop.write(file.getBytes());
+			directoryMap.put(key, file.getOriginalFilename());
 			
-			fop = new FileOutputStream(serverFile);
-			fop.write(bytes);
-			directoryMap.put(key, filename);
-			responseObj = new ResponseObject(Boolean.TRUE, HttpStatus.ACCEPTED.value(), "ID:"+key);
-
 			fop.flush();
 			fop.close();
+			
+			return new ResponseObject(Boolean.TRUE, HttpStatus.ACCEPTED.value(), "ID:"+key);
 		}
-		return responseObj;
+		else 
+			return null;
 	}
 
 	@Override
-	public ResponseObject downloadAudio(HttpServletResponse response, String id) throws IOException, FileNotFoundException {
+	public void downloadAudio(HttpServletResponse response, String id) throws IOException, FileNotFoundException {
 		// TODO Auto-generated method stub
 
 		filename =  directoryMap.get(id);	
@@ -90,16 +88,13 @@ public class AudioServiceImpl implements IAudioService {
 		if(filename != null)
 		{
 			serverFile = new File(dir+File.separator+id);
-			InputStream in = new FileInputStream(serverFile);
-			logger.info("File path for download: "+serverFile.getPath());
-
 			response.setContentType("audio/mpeg");
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 			response.setHeader("Content-Length", String.valueOf(serverFile.length()));
-			FileCopyUtils.copy(in, response.getOutputStream());
+			FileCopyUtils.copy(new FileInputStream(serverFile), response.getOutputStream());
 		}
-		else throw new FileNotFoundException("File not found.");
-		return responseObj;
+		else 
+			throw new FileNotFoundException("File not found.");
 	}
 
 	@Override

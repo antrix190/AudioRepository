@@ -40,9 +40,9 @@ public class AudioController {
 	}
 
 	@RequestMapping(value = "/downloadAudioFile/{id}", method = RequestMethod.GET)
-	public @ResponseBody ResponseObject uploadAudio(HttpServletResponse response,@PathVariable("id") String  id) throws IOException, FileNotFoundException {
+	public @ResponseBody void downloadAudio(HttpServletResponse response,@PathVariable("id") String  id) throws IOException, FileNotFoundException {
 		logger.info("Download Request for: "+id);
-		return audioService.downloadAudio(response,id);
+		audioService.downloadAudio(response,id);
 	}
 	
 	@RequestMapping(value="/dir",method=RequestMethod.GET)

@@ -26,14 +26,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ResponseBody
 	public ResponseEntity<Object> FileNotFoundExceptionHandler(FileNotFoundException ex) {
 		logger.info("Caught FileNotFoundException");
-	    return getResponseEntity(Boolean.FALSE,HttpStatus.NOT_FOUND.value(),ex.getMessage(),HttpStatus.NOT_FOUND);
+	    return getResponseEntity(Boolean.FALSE,ex.getMessage(),HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(InvalidFileException.class)
 	@ResponseBody
 	public ResponseEntity<Object> InvalidFileExceptionHandler(InvalidFileException ex) {
 		logger.error("Caught InvalidFileException");
-	    return getResponseEntity(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),ex.getMessage(),HttpStatus.BAD_REQUEST);
+	    return getResponseEntity(Boolean.FALSE,ex.getMessage(),HttpStatus.BAD_REQUEST);
 	}
 	
 
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ResponseBody
 	public ResponseEntity<Object> exceptionHandler(HttpServletRequest req, Exception ex) {
 		logger.error("Caught Exception type {}, message {}",ex.getClass().getSimpleName(),ex.getMessage());
-	    return getResponseEntity(Boolean.FALSE,HttpStatus.INTERNAL_SERVER_ERROR.value(),ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+	    return getResponseEntity(Boolean.FALSE,ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	/**
@@ -51,10 +51,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param httpStatus
 	 * @return
 	 */
-	private ResponseEntity<Object> getResponseEntity(Boolean status, int code, String message,
-			HttpStatus httpStatus) {
+	private ResponseEntity<Object> getResponseEntity(Boolean status, String message,HttpStatus httpStatus) {
 		// TODO Auto-generated method stub
-		errorInfo = new ResponseObject(status,code,message);
+		errorInfo = new ResponseObject(status,httpStatus.value(),message);
 		return new ResponseEntity<Object>(errorInfo,httpStatus);
 	}
 	 }

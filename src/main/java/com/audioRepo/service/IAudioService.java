@@ -17,7 +17,7 @@ public interface IAudioService {
 	
 	ResponseObject uploadAudio(MultipartFile File) throws InvalidFileException, IOException;
 	
-	ResponseObject downloadAudio(	HttpServletResponse response,String id) throws IOException, FileNotFoundException;
+	void downloadAudio(	HttpServletResponse response,String id) throws IOException, FileNotFoundException;
 	
 	Map<String, String> getDirectory() throws IOException;
 }
