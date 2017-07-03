@@ -1,4 +1,4 @@
-package com.audioRepo.entity;
+package com.repo.entity;
 
 public class ResponseObject {
 	

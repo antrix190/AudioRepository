@@ -1,4 +1,4 @@
-package com.audioRepo.service;
+package com.repo.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,20 +20,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.audioRepo.Validation.FileValidator;
-import com.audioRepo.entity.ResponseObject;
-import com.audioRepo.exception.FileNotFoundException;
-import com.audioRepo.exception.InvalidFileException;
+import com.repo.Validation.FileValidator;
+import com.repo.entity.ResponseObject;
+import com.repo.exception.FileNotFoundException;
+import com.repo.exception.InvalidFileException;
 
-@Service("audioService")
-public class AudioServiceImpl implements IAudioService {
-	final static Logger logger = LoggerFactory.getLogger(AudioServiceImpl.class);
+@Service("fileService")
+public class FileService {
+	final static Logger logger = LoggerFactory.getLogger(FileService.class);
 
 	@Value("${file.path.fallback}")
 	private String folder;
 
 	@Value("${file.path}")
 	public String path;
+	
+	@Value("${file.content.type}")
+	public String contentType;
 
 	//Directory Map which stores id->filename
 	//Change the implementation.
@@ -45,40 +48,36 @@ public class AudioServiceImpl implements IAudioService {
 	public String filename;
 
 	@PostConstruct
-	private void initPath(){
-		if(path==null || path.length()==0)
-			path = System.getProperty("catalina.base")+"\\"+folder;
-
-		logger.info("path "+path);
+	private void initPath() throws Exception{
+		if(path==null || path.length()==0){
+			path = System.getProperty("catalina.base")+File.separator+folder;
+		}
+		
 		dir = new File(path+ File.separator+"uploads");
 
 		//Create uploads directory if it doesn't exist.
-		if(!dir.exists())
-			dir.mkdirs();
+		if(!dir.exists()){
+			if(!dir.mkdirs())
+				throw new Exception("Cannot create directory ‘uploads’: Permission denied");
+		}
 	}
 
-	@Override
 	public ResponseObject uploadAudio(MultipartFile file) throws InvalidFileException, IOException {
 		// TODO Auto-generated method stub
 		//Unique Id for each upload
 		key = UUID.randomUUID().toString();
 
 		if (FileValidator.isValid(file)) { 
-			serverFile = new File(dir.getAbsolutePath() + File.separator+ key);
+			serverFile = new File(dir.getAbsolutePath() + File.separator+ file.getOriginalFilename());
 			FileOutputStream fop = new FileOutputStream(serverFile);
 			fop.write(file.getBytes());
 			directoryMap.put(key, file.getOriginalFilename());
-			
 			fop.flush();
 			fop.close();
-			
-			return new ResponseObject(Boolean.TRUE, HttpStatus.ACCEPTED.value(), "ID:"+key);
 		}
-		else 
-			return null;
+		return new ResponseObject(Boolean.TRUE, HttpStatus.ACCEPTED.value(), "ID:"+key);
 	}
 
-	@Override
 	public void downloadAudio(HttpServletResponse response, String id) throws IOException, FileNotFoundException {
 		// TODO Auto-generated method stub
 
@@ -88,19 +87,21 @@ public class AudioServiceImpl implements IAudioService {
 		if(filename != null)
 		{
 			serverFile = new File(dir+File.separator+id);
-			response.setContentType("audio/mpeg");
+			response.setContentType(contentType);
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 			response.setHeader("Content-Length", String.valueOf(serverFile.length()));
 			FileCopyUtils.copy(new FileInputStream(serverFile), response.getOutputStream());
 		}
-		else 
+		else{ 
 			throw new FileNotFoundException("File not found.");
+		}
 	}
 
-	@Override
-	public Map<String,String> getDirectory() throws IOException {
+	public File[] getDirectory() throws IOException {
 		// TODO Auto-generated method stub
 		//Change for Directory
-		return directoryMap;
+		File folder = new File(dir.getAbsoluteFile().toString());
+		File[] listOfFiles = folder.listFiles();
+		return listOfFiles;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.audioRepo.exception;
+package com.repo.exception;
 
 /**
  * @author antariksh.singh

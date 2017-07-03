@@ -1,5 +1,6 @@
-package com.audioRepo.web;
+package com.repo.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -20,33 +21,33 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.audioRepo.entity.ResponseObject;
-import com.audioRepo.exception.FileNotFoundException;
-import com.audioRepo.exception.InvalidFileException;
-import com.audioRepo.service.IAudioService;
+import com.repo.entity.ResponseObject;
+import com.repo.exception.FileNotFoundException;
+import com.repo.exception.InvalidFileException;
+import com.repo.service.FileService;
 
 @RestController
-public class AudioController {
+public class RepoController {
 	
-	final static Logger logger = LoggerFactory.getLogger(AudioController.class);
+	final static Logger logger = LoggerFactory.getLogger(RepoController.class);
 	
 	@Autowired
-	IAudioService audioService;
+	FileService service;
 	
 	@RequestMapping(value = "/uploadAudioFile", method = RequestMethod.POST)
 	public @ResponseBody ResponseObject uploadAudio(@RequestParam("file") MultipartFile file) throws IOException, InvalidFileException {
 		logger.info("uploadAudioFile Request");
-		return audioService.uploadAudio(file);
+		return service.uploadAudio(file);
 	}
 
 	@RequestMapping(value = "/downloadAudioFile/{id}", method = RequestMethod.GET)
 	public @ResponseBody void downloadAudio(HttpServletResponse response,@PathVariable("id") String  id) throws IOException, FileNotFoundException {
 		logger.info("Download Request for: "+id);
-		audioService.downloadAudio(response,id);
+		service.downloadAudio(response,id);
 	}
 	
 	@RequestMapping(value="/dir",method=RequestMethod.GET)
-	public @ResponseBody Map<String, String> getDirectory() throws IOException{
-		return audioService.getDirectory();
+	public @ResponseBody File[] getDirectory() throws IOException{
+		return service.getDirectory();
 	} 
 }

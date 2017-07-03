@@ -1,4 +1,4 @@
-package com.audioRepo.exception;
+package com.repo.exception;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.audioRepo.entity.ResponseObject;
+import com.repo.entity.ResponseObject;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {

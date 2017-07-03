@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.audioRepo.config;
+package com.repo.config;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;

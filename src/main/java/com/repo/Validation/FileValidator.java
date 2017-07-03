@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.audioRepo.Validation;
+package com.repo.Validation;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.audioRepo.exception.InvalidFileException;
+import com.repo.exception.InvalidFileException;
 
 /**
  * @author antariksh.singh
